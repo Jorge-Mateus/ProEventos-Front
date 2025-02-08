@@ -21,6 +21,7 @@
     "@fortawesome/fontawesome-free": "^5.15.2",
     "bootstrap": "^4.6.2",
     "ngx-bootstrap": "^6.2.0",
+    "pro-eventos-app": "file:",
     "rxjs": "~6.6.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
