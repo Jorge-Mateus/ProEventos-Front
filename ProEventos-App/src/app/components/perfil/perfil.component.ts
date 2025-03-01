@@ -19,6 +19,10 @@ export class PerfilComponent implements OnInit {
 
   ngOnInit() {
     this.validation();
+
+    if (this.form.invalid) {
+      return;
+    }
   }
 
   public validation(): void {
@@ -40,7 +44,8 @@ export class PerfilComponent implements OnInit {
       }, formOptions);
   }
 
-    public resertForm(): void{
+    public resertForm(event: any): void{
+      event.preventDefault();
       this.form.reset();
     }
 
