@@ -5,6 +5,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { Evento } from '@app/models/Evento';
 import { EventoService } from '@app/services/evento.service';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-evento-lista',
@@ -16,6 +17,7 @@ export class EventoListaComponent implements OnInit {
   modalRef = {} as BsModalRef;
   public eventos: Evento[] = [];
   public eventosFiltrados:  Evento[] = [];
+  public eventoId = 0;
 
   public larguraImagem = 150;
   public margemImagem = 2;
@@ -48,7 +50,7 @@ export class EventoListaComponent implements OnInit {
 
   public ngOnInit(): void {
     this.spinner.show();
-    this.getEventos();
+    this.CarregarEventos();
 
   }
 
@@ -56,7 +58,7 @@ export class EventoListaComponent implements OnInit {
     this.exibirImagem = !this.exibirImagem;
   }
 
-  public getEventos(): void{
+  public CarregarEventos(): void{
     const observer = {
       next: (eventosResp: Evento[]) => {
         this.eventos = eventosResp;
@@ -73,13 +75,28 @@ export class EventoListaComponent implements OnInit {
     this.eventoService.getEventos().subscribe(observer);
   }
 
-  openModal(template: TemplateRef<any>): void {
+  openModal(event: any,template: TemplateRef<any>, eventoId: number): void {
+    event.stopPropagation();
+    this.eventoId = eventoId;
     this.modalRef = this.modalService.show(template, {class: 'modal-sm'});
   }
 
   confirm(): void {
     this.modalRef.hide();
-    this.toastr.success('O evento foi deletado com sucesso', 'Deletado');
+    this.spinner.show();
+    this.eventoService.deleteEvento(this.eventoId).subscribe(
+      (result: any) => {
+        if(result.message == 'Deletado')
+        {
+          this.toastr.success('O evento foi deletado com sucesso', 'Deletado');
+          this.CarregarEventos();
+        }
+      },
+      (error: any) => {
+        console.log(error);
+        this.toastr.error(`Erro ao tentar deletar o evento ${this.eventoId}`,'Erro');
+      },
+    ).add(() => this.spinner.hide());
   }
 
   decline(): void {
