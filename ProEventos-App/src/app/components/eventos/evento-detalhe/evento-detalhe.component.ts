@@ -17,6 +17,7 @@ import { EventoService } from '@app/services/evento.service';
 import { Evento } from '@app/models/Evento';
 import { Lote } from '@app/models/Lote';
 import { DatePipe } from '@angular/common';
+import { environment } from '@environments/environment';
 
 @Component({
   selector: 'app-evento-detalhe',
@@ -31,7 +32,7 @@ export class EventoDetalheComponent implements OnInit {
   form: FormGroup;
   estadoSalvar = 'post';
   loteAtual = { id: 0, nome: '', indice: 0 };
-  imagemURL = 'assets/img/upload.png';
+  imagemURL = '../../../../assets/img/Upload.png';
   file: File;
 
   get modoEditar(): boolean {
@@ -84,6 +85,9 @@ export class EventoDetalheComponent implements OnInit {
           (evento: Evento) => {
             this.evento = { ...evento };
             this.form.patchValue(this.evento);
+            if(this.evento.imagemURL !== ''){
+              this.imagemURL = environment.apiURL + 'resources/imagens/' + this.evento.imagemURL;
+            }
             this.carregarLotes();
           },
           (error: any) => {
@@ -250,9 +254,24 @@ export class EventoDetalheComponent implements OnInit {
 
     this.file = ev.target.files;
     reader.readAsDataURL(this.file[0]);
+
+    this.uploadImagem();
+  }
+
+ public uploadImagem(): void{
+  this.spinner.show();
+  this.eventoService.postUpload(this.eventoId, this.file).subscribe(
+    () => {
+      this.carregarEvento();
+      this.toastr.success('Imagem atualizada com sucesso', 'Sucesso');
+    },
+    (error: any) => {
+      this.toastr.error('Erro ao fazer upload de imagem', 'Erro');
+      console.log(error);
+      console.error(error);
     }
-
-
+  ).add(() => this.spinner.hide());
+ }
 
 
 }
