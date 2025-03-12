@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AccountService } from '@app/services/account.service';
 
 @Component({
   selector: 'app-nav',
@@ -11,9 +12,15 @@ export class NavComponent implements OnInit {
   //animação para o botão do navbar
   isCollapsed = true;
 
-  constructor(private router: Router) { }
+  constructor(public accountService: AccountService,
+              private router: Router) { }
 
   ngOnInit(): void {
+  }
+
+  logout(): void{
+    this.accountService.logout();
+    this.router.navigateByUrl('/user/login');
   }
 
   showMenu(): boolean{
